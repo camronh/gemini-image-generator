@@ -8,12 +8,12 @@ A Claude skill for generating and editing images using Google's Gemini AI.
 
 **Global install** (available in all projects):
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/gemini-image-generator/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/camronh/gemini-image-generator/main/install.sh | bash
 ```
 
 **Project install** (available only in current project):
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/gemini-image-generator/main/install.sh | bash -s local
+curl -sSL https://raw.githubusercontent.com/camronh/gemini-image-generator/main/install.sh | bash -s local
 ```
 
 ### Claude.ai / Claude Cowork

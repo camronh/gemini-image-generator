@@ -1,6 +1,6 @@
 #!/bin/bash
 # Gemini Image Generator - Install Script
-# Usage: curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/gemini-image-generator/main/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/camronh/gemini-image-generator/main/install.sh | bash
 #        curl -sSL ... | bash -s local  # Install to current project instead of global
 
 set -e
@@ -22,7 +22,7 @@ fi
 mkdir -p "$SKILL_DIR"
 
 echo "Downloading..."
-curl -sSL https://github.com/YOUR_USERNAME/gemini-image-generator/archive/main.tar.gz | \
+curl -sSL https://github.com/camronh/gemini-image-generator/archive/main.tar.gz | \
   tar -xz --strip-components=1 -C "$SKILL_DIR"
 
 # Restore .env if it was backed up
