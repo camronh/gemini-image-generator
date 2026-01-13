@@ -1,6 +1,6 @@
 # Gemini Image Generator
 
-A Claude skill for generating images using Google's Gemini AI.
+A Claude skill for generating and editing images using Google's Gemini AI.
 
 ## Install
 
@@ -47,6 +47,19 @@ Ask Claude to generate an image:
 - **Filename**: "save it as robot.png"
 - **Aspect ratio**: "make it 16:9" (options: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9`)
 - **Output dir**: "save it to ./images/"
+- **Reference images**: "edit this image" or "use this as a style reference"
+
+### Image Editing & References
+
+Edit existing images or use reference images for style transfer:
+
+> "Add a party hat to ./cat.png"
+
+> "Generate a portrait in the style of ./reference.jpg"
+
+> "Create a group photo of the people in person1.jpg and person2.jpg at a beach"
+
+Supports up to 14 reference images.
 
 ## Prompting Tips
 

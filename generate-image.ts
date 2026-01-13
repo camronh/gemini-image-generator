@@ -15,11 +15,24 @@ function getApiKey(): string | undefined {
   return process.env.GOOGLE_API_KEY;
 }
 
+function getMimeType(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeTypes: Record<string, string> = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+  };
+  return mimeTypes[ext] || "image/png";
+}
+
 function parseArgs(args: string[]) {
   let prompt = "";
   let fileName = "generated-image.png";
   let aspectRatio = "1:1";
   let outputDir = ".";
+  const referenceImages: string[] = [];
 
   const promptParts: string[] = [];
 
@@ -34,6 +47,8 @@ function parseArgs(args: string[]) {
       aspectRatio = args[++i];
     } else if (arg === "--output" || arg === "-o") {
       outputDir = args[++i];
+    } else if (arg === "--ref" || arg === "-r") {
+      referenceImages.push(args[++i]);
     } else {
       promptParts.push(arg);
     }
@@ -41,7 +56,7 @@ function parseArgs(args: string[]) {
 
   prompt = promptParts.join(" ");
   const outputPath = path.join(outputDir, fileName);
-  return { prompt, outputPath, outputDir, aspectRatio };
+  return { prompt, outputPath, outputDir, aspectRatio, referenceImages };
 }
 
 async function main() {
@@ -52,10 +67,16 @@ async function main() {
     process.exit(1);
   }
 
-  const { prompt, outputPath, outputDir, aspectRatio } = parseArgs(process.argv);
+  const { prompt, outputPath, outputDir, aspectRatio, referenceImages } = parseArgs(process.argv);
 
   if (!prompt) {
-    console.error("Usage: npx tsx generate-image.ts <prompt> [--name/-n <filename>] [--aspect/-a <ratio>] [--output/-o <dir>]");
+    console.error("Usage: npx tsx generate-image.ts <prompt> [options]");
+    console.error("");
+    console.error("Options:");
+    console.error("  -n, --name <file>     Output filename (default: generated-image.png)");
+    console.error("  -a, --aspect <ratio>  Aspect ratio (default: 1:1)");
+    console.error("  -o, --output <dir>    Output directory (default: ./)");
+    console.error("  -r, --ref <image>     Reference image (can be used multiple times)");
     process.exit(1);
   }
 
@@ -65,6 +86,14 @@ async function main() {
     process.exit(1);
   }
 
+  // Validate reference images exist
+  for (const img of referenceImages) {
+    if (!fs.existsSync(img)) {
+      console.error(`Reference image not found: ${img}`);
+      process.exit(1);
+    }
+  }
+
   // Ensure output directory exists
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -72,11 +101,31 @@ async function main() {
 
   const ai = new GoogleGenAI({ apiKey });
 
-  console.log(`Generating image for: "${prompt}" (${aspectRatio})`);
+  if (referenceImages.length > 0) {
+    console.log(`Generating image for: "${prompt}" with ${referenceImages.length} reference image(s) (${aspectRatio})`);
+  } else {
+    console.log(`Generating image for: "${prompt}" (${aspectRatio})`);
+  }
+
+  // Build contents array with text prompt and any reference images
+  const contents: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
+    { text: prompt }
+  ];
+
+  for (const imgPath of referenceImages) {
+    const imageData = fs.readFileSync(imgPath);
+    const base64Image = imageData.toString("base64");
+    contents.push({
+      inlineData: {
+        mimeType: getMimeType(imgPath),
+        data: base64Image,
+      },
+    });
+  }
 
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-image-preview",
-    contents: prompt,
+    contents: contents,
     config: {
       responseModalities: ["Image"],
       imageConfig: {

@@ -1,6 +1,6 @@
 ---
 name: gemini-image-generator
-description: "Generate images using Google Gemini. Use when the user asks to generate, create, or make images."
+description: "Generate and edit images using Google Gemini. Use when the user asks to generate, create, edit, or modify images."
 ---
 
 # Gemini Image Generator
@@ -26,6 +26,26 @@ When the user asks you to generate an image:
 - `--name, -n <filename>`: File name. Default: `generated-image.png`
 - `--aspect, -a <ratio>`: Aspect ratio (`1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9`). Default: `1:1`
 - `--output, -o <dir>`: Output directory. Default: current directory
+- `--ref, -r <image>`: Reference image for editing or style transfer (can be used multiple times, up to 14 images)
+
+## Reference Images
+
+Use `-r` to edit an existing image or use images as style/content references:
+
+**Edit an image:**
+```bash
+npx tsx <skill-dir>/generate-image.ts "Add a party hat to this cat" -r ./cat.png -n cat-party.png
+```
+
+**Style transfer:**
+```bash
+npx tsx <skill-dir>/generate-image.ts "A portrait in this art style" -r ./reference-style.jpg -n portrait.png
+```
+
+**Multiple references:**
+```bash
+npx tsx <skill-dir>/generate-image.ts "Group photo of these people at a beach" -r person1.jpg -r person2.jpg -r person3.jpg
+```
 
 ## Prompting Guide
 
