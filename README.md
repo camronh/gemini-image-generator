@@ -2,6 +2,8 @@
 
 A Claude skill for generating and editing images using Google's Gemini AI.
 
+![Install command](install-hero.png)
+
 ## Install
 
 ### Claude Code
